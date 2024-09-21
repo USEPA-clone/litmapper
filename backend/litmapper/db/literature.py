@@ -1,10 +1,9 @@
 import re
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence
 
-from sqlalchemy import and_, case
-from sqlalchemy.orm import Query, Session, aliased
+from sqlalchemy import and_
+from sqlalchemy.orm import Query, Session
 from sqlalchemy.sql import exists
-from sqlalchemy.sql.functions import count
 from sqlalchemy_searchable import search
 
 from litmapper import models, schemas
@@ -242,89 +241,6 @@ def delete_article_set(db: Session, article_set_id: int):
         models.ArticleSet.article_set_id == article_set_id
     ).delete()
     db.commit()
-
-
-def crosstab_article_tags(
-    db: Session, articles: Query, row_tag_name: str, column_tag_name: str
-) -> List[Tuple[str, str, str, str, int]]:
-    articles_subquery = articles.subquery()
-
-    row_tags = aliased(models.Tag)
-    row_tag_name_col = models.Tag.name.label("row_tag_name")
-    row_tag_value_col = models.Tag.value.label("row_tag_value")
-    row_tag_query = (
-        db.query(row_tags)
-        .filter(row_tag_name_col == row_tag_name)
-        .with_entities(models.Tag.tag_id, row_tag_name_col, row_tag_value_col)
-        .subquery()
-    )
-    column_tags = aliased(models.Tag)
-    column_tag_name_col = models.Tag.name.label("column_tag_name")
-    column_tag_value_col = models.Tag.value.label("column_tag_value")
-    column_tag_query = (
-        db.query(column_tags)
-        .filter(column_tag_name_col == column_tag_name)
-        .with_entities(models.Tag.tag_id, column_tag_name_col, column_tag_value_col)
-        .subquery()
-    )
-
-    # Cross join to get all combinations of row/column
-    all_tags = db.query(row_tag_query, column_tag_query).subquery()
-
-    # Calculate the counts for all combinations of our row/column tags
-    row_article_tags = aliased(models.article_tag)
-    column_article_tags = aliased(models.article_tag)
-
-    # The nature of the join below means it won't return rows for any cells having
-    # count = 0
-    group_cols = (
-        row_tag_query.c.row_tag_name,
-        row_tag_query.c.row_tag_value,
-        column_tag_query.c.column_tag_name,
-        column_tag_query.c.column_tag_value,
-    )
-    cell_count_col = count().label("count")
-    nonzero_counts = (
-        db.query(row_tag_query)
-        .join(row_article_tags, row_tag_query.c.tag_id == row_article_tags.c.tag_id)
-        .join(
-            articles_subquery,
-            row_article_tags.c.article_id == articles_subquery.c.article_id,
-            isouter=True,
-        )
-        .join(
-            column_article_tags,
-            articles_subquery.c.article_id == column_article_tags.c.article_id,
-        )
-        .join(
-            column_tag_query, column_article_tags.c.tag_id == column_tag_query.c.tag_id
-        )
-        .with_entities(*group_cols, cell_count_col)
-        .group_by(*group_cols)
-    ).subquery()
-
-    # Left join starting with the cross join generated first to return counts for all
-    # cells (even if the value is 0)
-    crosstab_query = (
-        db.query(all_tags)
-        .join(
-            nonzero_counts,
-            (all_tags.c.row_tag_name == nonzero_counts.c.row_tag_name)
-            & (all_tags.c.row_tag_value == nonzero_counts.c.row_tag_value)
-            & (all_tags.c.column_tag_name == nonzero_counts.c.column_tag_name)
-            & (all_tags.c.column_tag_value == nonzero_counts.c.column_tag_value),
-            isouter=True,
-        )
-        .with_entities(
-            all_tags.c.row_tag_name,
-            all_tags.c.row_tag_value,
-            all_tags.c.column_tag_name,
-            all_tags.c.column_tag_value,
-            case([(nonzero_counts.c.count.is_(None), 0)], else_=nonzero_counts.c.count),
-        )
-    )
-
-    return crosstab_query.all()
 
 
 def get_article_count(

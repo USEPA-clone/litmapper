@@ -17,11 +17,9 @@ from litmapper.kv.util import (
 )
 from litmapper.test.util import (
     make_test_article_mesh_terms,
-    make_test_article_tags,
     make_test_articles,
     make_test_embeddings,
     make_test_mesh_terms,
-    make_test_tags,
 )
 
 # Function used to generate a resource's parameters and the expected output
@@ -35,18 +33,11 @@ def get_test_filter_set(
 ) -> Tuple[schemas.FilterSetParams, schemas.FilterSetResult]:
     # Construct a valid pair of params <-> result based on article-tag relationships in
     # the DB
-    articles = make_test_articles(db_txn)
-    tags = make_test_tags(db_txn)
-    article_tags = make_test_article_tags(db_txn, articles, tags)
+    _ = make_test_articles(db_txn)
 
-    param_tag_id = tags[0]["tag_id"]
     params = schemas.FilterSetParams(full_text_search_query="TODO placeholder")
 
-    result_article_ids = []
-    for article_tag in article_tags:
-        if article_tag["tag_id"] == param_tag_id:
-            result_article_ids.append(article_tag["article_id"])
-    result = schemas.FilterSetResult(article_ids=result_article_ids)
+    result = schemas.FilterSetResult(article_ids=[0, 2])
 
     return params, result
 

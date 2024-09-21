@@ -1,7 +1,7 @@
 import random
 from typing import Any, Callable, Dict, List, Sequence
 
-import requests
+import httpx
 from sqlalchemy.orm import Session
 from starlette.testclient import TestClient
 
@@ -10,7 +10,7 @@ from litmapper import models
 JsonObj = Dict[str, Any]
 
 
-def require_response_code(res: requests.Response, status_code: int):
+def require_response_code(res: httpx.Response, status_code: int):
     assert res.status_code == status_code, "\n".join(
         (
             "Response code mismatch.",
@@ -90,7 +90,6 @@ def make_test_articles(db_txn: Session) -> List[JsonObj]:
             "title": "title",
             "abstract": "abstract",
             "publication_date": "2020-01-01",
-            "tags": [],
             "mesh_terms": [],
             "embedding": None,
         },
@@ -100,7 +99,6 @@ def make_test_articles(db_txn: Session) -> List[JsonObj]:
             "title": "title2",
             "abstract": "abstract2",
             "publication_date": "2020-01-02",
-            "tags": [],
             "mesh_terms": [],
             "embedding": None,
         },
@@ -110,7 +108,6 @@ def make_test_articles(db_txn: Session) -> List[JsonObj]:
             "title": "title3",
             "abstract": "abstract3",
             "publication_date": "2020-01-03",
-            "tags": [],
             "mesh_terms": [],
             "embedding": None,
         },
@@ -120,39 +117,6 @@ def make_test_articles(db_txn: Session) -> List[JsonObj]:
     db_txn.commit()
 
     return test_articles
-
-
-def make_test_tags(db_txn: Session) -> List[JsonObj]:
-    test_tags = [
-        {"tag_id": 0, "name": "tag1", "value": "a"},
-        {"tag_id": 1, "name": "tag2", "value": "b"},
-        {"tag_id": 2, "name": "tag3", "value": "c"},
-    ]
-    for model_data in test_tags:
-        db_txn.add(models.Tag(**model_data))
-
-    db_txn.commit()
-
-    return test_tags
-
-
-def make_test_article_tags(
-    db_txn: Session, articles: List[JsonObj], tags: List[JsonObj]
-) -> List[JsonObj]:
-    test_article_tags = []
-
-    for article, tag in zip(articles, tags):
-        article_tag = {
-            "article_id": article["article_id"],
-            "tag_id": tag["tag_id"],
-        }
-
-        db_txn.execute(models.article_tag.insert(values=article_tag))
-        test_article_tags.append(article_tag)
-
-    db_txn.commit()
-
-    return test_article_tags
 
 
 def make_test_mesh_terms(db_txn: Session) -> List[JsonObj]:

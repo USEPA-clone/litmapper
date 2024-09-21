@@ -279,13 +279,13 @@ def test_get_article_sets(db_txn: Session, api_client: TestClient):
         assert res_article_ids[0] == article_article_set["article_id"]
 
         # Verify the CSV download endpoint for the set also works
-        with api_client.get(
+        with api_client.get(  # type: ignore
             f"/literature/article_set/{article_article_set['article_set_id']}/csv",
         ) as res:
             require_response_code(res, 200)
-            res.raw.decode_content = True
+            res.raw.decode_content = True  # type: ignore
             buf = io.BytesIO()
-            shutil.copyfileobj(res.raw, buf)
+            shutil.copyfileobj(res.raw, buf)  # type: ignore
             wrapper = io.TextIOWrapper(buf, encoding="utf-8")
             # Must seek back to the beginning after writing to the buffer...
             wrapper.seek(0)
