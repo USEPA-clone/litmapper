@@ -31,8 +31,7 @@ jobs:
       - name: Start database services
         run: docker compose up -d database redis
       - name: Wait for database startup to finish
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '10s'
+        run: sleep 10s
+        shell: bash
       - name: Run backend tests
         run: ./scripts/test_backend.sh
