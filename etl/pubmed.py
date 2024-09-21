@@ -385,9 +385,7 @@ def embed_articles(
 
         # Upload newly generated embeddings
         batch_count = 0
-        for articles in article_batch_iter(
-            api_base_url, {"pmids": pmids}
-        ):
+        for articles in article_batch_iter(api_base_url, {"pmids": pmids}):
             logger.info(
                 f"Generating embeddings for {len(articles)} texts. Batch {batch_count}."
             )

@@ -3,6 +3,7 @@ from typing import Optional
 
 import click
 from prefect import Flow
+
 from pubmed import download_articles, embed_articles, load_pmids_tags, read_pmids
 from secret import (
     get_api_base_url,

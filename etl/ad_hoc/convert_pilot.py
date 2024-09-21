@@ -17,7 +17,9 @@ data_dir = Path(__file__).parent.parent / "data"
 @click.command("main")
 @click.argument("input_filepath")
 def main(input_filepath: str):
-    tag_df = pd.read_csv(input_filepath, usecols=["RefID", "Author", "Title", "Abstract"])
+    tag_df = pd.read_csv(
+        input_filepath, usecols=["RefID", "Author", "Title", "Abstract"]
+    )
     tag_df = tag_df.rename({"RefID": "PMID"}, axis=1)
 
     output_path = data_dir / "pilot.csv"
