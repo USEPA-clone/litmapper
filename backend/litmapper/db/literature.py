@@ -1,11 +1,10 @@
 import re
-from collections import defaultdict
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from sqlalchemy import and_, case, false, true
+from sqlalchemy import and_, case
 from sqlalchemy.orm import Query, Session, aliased
 from sqlalchemy.sql import exists
-from sqlalchemy.sql.functions import array_agg, count
+from sqlalchemy.sql.functions import count
 from sqlalchemy_searchable import search
 
 from litmapper import models, schemas

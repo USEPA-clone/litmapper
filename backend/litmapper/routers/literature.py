@@ -18,14 +18,12 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from redis import Redis
-from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session
 
 from litmapper import errors, models, schemas, tasks
 from litmapper.db.literature import (
     add_temp_articles_pubmed,
-    crosstab_article_tags,
     delete_article_set,
     filter_articles,
     find_article_litmapper_id,
@@ -112,9 +110,7 @@ def get_articles(
         elif pmids is not None and len(pmids) > 0:
             articles = find_articles_pmids(db, pmids)
         else:
-            articles = filter_articles(
-                db, articles, full_text_search_query
-            )
+            articles = filter_articles(db, articles, full_text_search_query)
     except ValueError as e:
         raise HTTPException(
             status_code=400,
@@ -419,9 +415,7 @@ def get_article_tags_count(
     full_text_search_query: Optional[str] = None,
     db: Session = Depends(get_db_dep),
 ):
-    articles = filter_articles(
-        db, db.query(models.Article), full_text_search_query
-    )
+    articles = filter_articles(db, db.query(models.Article), full_text_search_query)
     count = articles.count()
 
     if full_text_search_query:

@@ -412,9 +412,11 @@ def _make_article_groups(
     # Can't run the below SQL queries if we don't have any articles to group
     if len(filtered_article_ids) == 0:
         return _make_blank_article_group_result()
-    
+
     articles = db.query(models.Article)
-    filtered_articles = articles.filter(models.Article.article_id.in_(filtered_article_ids))
+    filtered_articles = articles.filter(
+        models.Article.article_id.in_(filtered_article_ids)
+    )
     joined_articles = filtered_articles.join(models.Article.embeddings)
     filtered_article_data = joined_articles.with_entities(
         models.Article.article_id,

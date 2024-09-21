@@ -63,7 +63,7 @@ class ArticleEmbedding(BaseModel):
     specter_embedding: Optional[List[float]]
 
     class Config:
-        orm_mode = True\
+        orm_mode = True
 
 
 class ArticleBase(BaseModel):

@@ -101,7 +101,7 @@ class ArticleMeshTerm(Base):
         ForeignKey("article.article_id"),
         primary_key=True,
         autoincrement=False,
-        index=True
+        index=True,
     )
     mesh_id = Column(String, ForeignKey("mesh_term.mesh_id"))
 

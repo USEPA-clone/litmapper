@@ -3,7 +3,7 @@ import io
 import math
 import random
 import shutil
-from typing import Any, Callable, ContextManager, List, Tuple
+from typing import Any, Callable, ContextManager
 from urllib.parse import urlencode
 
 import pandas as pd
@@ -17,7 +17,10 @@ from litmapper.db.literature import (
     find_embedding,
     find_mesh_term,
 )
-from litmapper.kv.util import _make_blank_article_group_result, _make_blank_clustering_result
+from litmapper.kv.util import (
+    _make_blank_article_group_result,
+    _make_blank_clustering_result,
+)
 from litmapper.test.util import (
     JsonObj,
     make_test_article_article_sets,
@@ -34,10 +37,10 @@ random.seed(1)
 
 
 def test_get_article(db_txn: Session, api_client: TestClient):
-    res = api_client.get(f"/literature/article/?article_id=0")
+    res = api_client.get("/literature/article/?article_id=0")
     require_response_code(res, 404)
 
-    res = api_client.get(f"/literature/article/?pmid=123")
+    res = api_client.get("/literature/article/?pmid=123")
     require_response_code(res, 404)
 
     test_articles = make_test_articles(db_txn)
@@ -80,6 +83,7 @@ def test_get_articles(db_txn: Session, api_client: TestClient):
         require_response_code(res, 200)
         assert res.json() == [test_articles[page]]
         assert res.headers["X-Total-Count"] == "3"
+
 
 def test_upsert_articles(db_txn: Session, api_client: TestClient):
     test_data = make_test_articles(db_txn)
@@ -388,9 +392,7 @@ def test_get_and_create_clustering(
     task_await: Callable[[], ContextManager],
 ):
     test_clustering_params = schemas.ClusteringParams(
-        filter_set=schemas.FilterSetParams(
-            full_text_search_query="TODO placeholder"
-        ),
+        filter_set=schemas.FilterSetParams(full_text_search_query="TODO placeholder"),
     )
     params_hash = str(hash(test_clustering_params))
 
@@ -426,7 +428,9 @@ def test_get_and_create_article_group(
 ):
     test_article_group_params = schemas.ArticleGroupParams(
         clustering=schemas.ClusteringParams(
-            filter_set=schemas.FilterSetParams(full_text_search_query="TODO placeholder")
+            filter_set=schemas.FilterSetParams(
+                full_text_search_query="TODO placeholder"
+            )
         ),
     )
     params_hash = str(hash(test_article_group_params))
