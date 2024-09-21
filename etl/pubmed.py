@@ -2,7 +2,7 @@ import datetime as dt
 import itertools
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple, TypeVar
+from typing import Any, Dict, Iterator, List, Optional, TypeVar
 
 import pandas as pd
 import prefect

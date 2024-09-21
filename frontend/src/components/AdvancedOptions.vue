@@ -100,16 +100,12 @@
 </template>
 
 <script>
-import TagFilterAutocomplete from "@/components/TagFilterAutocomplete.vue";
 import debounce from "lodash/debounce";
 import startCase from "lodash/startCase";
 import keys from "lodash/keys";
 
 export default {
   name: "AdvancedOptions",
-  components: {
-    TagFilterAutocomplete,
-  },
   props: {
     // Intended for use with v-model
     modelValue: {
