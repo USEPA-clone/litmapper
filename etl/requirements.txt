@@ -1,0 +1,21 @@
+black==24.3.0
+flake8==3.7.9
+isort==4.3.21
+mypy==1.11.1
+requests==2.32.3
+types-requests==2.31.0 # needed for mypy
+prefect[viz,templates]==0.15.13
+biopython==1.79
+pandas==1.1.5
+xlrd==1.2.0
+tensorflow_hub==0.16.1
+hdbscan==0.8.32
+umap-learn==0.5.3
+# numpy==1.22
+scikit-learn==1.5.0
+dppy==0.3.2
+tqdm==4.66.5
+transformers==4.39.1
+torch==2.2.0
+tensorflow==2.17.0
+protobuf==3.20.3

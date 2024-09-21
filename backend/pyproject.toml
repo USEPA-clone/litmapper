@@ -1,0 +1,22 @@
+[tool.black]
+line-length = 88
+target-version = ['py39']
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.pytest]
+log_cli = "True"

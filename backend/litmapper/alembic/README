@@ -1,0 +1,16 @@
+Generic single-database configuration.
+
+
+Commands:
+
+```
+alembic upgrade head
+```
+
+Will update the database to the latest migrations.
+
+```
+alembic downgrade -1
+```
+
+Will revert the last migration.

@@ -1,0 +1,111 @@
+services:
+  etl:
+    image: "epa-litmapper-etl:${IMAGE_TAG:-latest}"
+    build:
+      context: ./etl
+    environment:
+      ENTREZ_EMAIL: "${ENTREZ_EMAIL}"
+      ENTREZ_TOOL: "litmapper"
+      ENTREZ_API_KEY: "${ENTREZ_API_KEY}"
+      API_BASE_URL: "http://backend:8000"
+      PYTHONUNBUFFERED: "1"
+      PREFECT__LOGGING__LEVEL: ${PREFECT__LOGGING__LEVEL:-INFO}
+      TFHUB_CACHE_DIR: /code/data/tfhub
+      TF_CPP_MIN_LOG_LEVEL: "3"
+    volumes:
+      - ./etl:/code
+
+  backend:
+    image: "epa-litmapper-backend:${IMAGE_TAG:-latest}"
+    build:
+      context: ./backend
+    environment:
+      POSTGRES_URI: "postgresql://litmapper:litmapper@database:5432/litmapper"
+      API_BASE_URL: "http://backend:8000"
+      ENTREZ_EMAIL: "${ENTREZ_EMAIL}"
+      ENTREZ_TOOL: "litmapper"
+      ENTREZ_API_KEY: "${ENTREZ_API_KEY}"
+      REDIS_URI: "redis://redis:6379/litmapper"
+      PYTHONUNBUFFERED: "1"
+      # Needed to prevent hashes from differing between the main API
+      # process and the worker process
+      PYTHONHASHSEED: "1"
+      TFHUB_CACHE_DIR: /code/data/tfhub
+    volumes:
+      - ./backend:/code
+      - ../etl:/code/etl
+    ports:
+      - "${LITMAPPER_BACKEND_PORT:-8000}:8000"
+
+  # Used for application-level caching from the backend
+  redis:
+    image: "redis:6"
+
+  # Used as a message broker for the backend task queue
+  rabbitmq:
+    image: "rabbitmq:3.8-alpine"
+    hostname: "litmapper-rabbit"
+
+  backend-worker:
+    image: "epa-litmapper-backend:${IMAGE_TAG:-latest}"
+    environment:
+      POSTGRES_URI: "postgresql://litmapper:litmapper@database:5432/litmapper"
+      REDIS_URI: "redis://redis:6379/litmapper"
+      PYTHONUNBUFFERED: "1"
+      # Needed to prevent hashes from differing between the main API
+      # process and the worker process
+      PYTHONHASHSEED: "1"
+      TFHUB_CACHE_DIR: /code/data/tfhub
+    volumes:
+      - ./backend:/code
+    command: dramatiq litmapper.tasks:broker litmapper --watch .
+
+  database:
+    image: "postgres:11.7"
+    environment:
+      POSTGRES_PASSWORD: "litmapper"
+      POSTGRES_USER: "litmapper"
+      POSTGRES_DB: "litmapper"
+      PGPASSWORD: "litmapper"
+    volumes:
+      - litmapper-pgdata:/var/lib/postgresql/data
+    ipc: host
+    ports:
+      - "${LITMAPPER_DATABASE_PORT:-5432}:5432"
+
+  frontend:
+    image: "epa-litmapper-frontend:${IMAGE_TAG:-latest}"
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend/build:/code/build
+      - ./frontend/src:/code/src
+      - ./frontend/public:/code/public
+      - ./frontend/vite.config.mjs:/code/vite.config.mjs
+    ports:
+      - "${LITMAPPER_FRONTEND_PORT:-8080}:5173"
+
+  specter:
+    image: "epa-litmapper-specter:${IMAGE_TAG:-latest}"
+    build:
+      context: ./specter
+    environment:
+      POSTGRES_URI: "postgresql://specter:specter@specter_database:5432/specter"
+    volumes:
+      - ./specter:/code
+
+  specter_database:
+    image: "postgres:11.7"
+    environment:
+      POSTGRES_PASSWORD: "specter"
+      POSTGRES_USER: "specter"
+      POSTGRES_DB: "specter"
+      PGPASSWORD: "specter"
+    volumes:
+      - specter-pgdata:/var/lib/postgresql/data
+    ports:
+      - "${SPECTER_DATABASE_PORT:-5433}:5432"
+
+volumes:
+  litmapper-pgdata:
+  specter-pgdata:
