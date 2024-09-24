@@ -1,6 +1,24 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches: [main]
+    # Only on these paths so that something like a README update doesn't trigger it
+    paths:
+      - requirements.txt
+      - "**.py"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - requirements.txt
+      - "**.py"
+      - ".github/workflows/ci.yml"
+  workflow_dispatch:
+
+# Cancel existing executions when new commits are pushed onto the branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint_backend:
