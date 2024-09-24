@@ -1,5 +1,11 @@
 # LitMapper Systematic Review App
 
+Combing through the results of a literature search can be an overwhelming process that can impede the ability of investigators to quickly ask questions, such as what articles are most similar, what emerging concepts are present that deserve closer review, and how to refine a research question. LitMapper is an open-source web application to help investigators group and explore a heterogeneous body of literature to address these needs. LitMapper provides several integrated utilities that allow users to perform text searches, cluster papers based on title and abstract text, and perform semantic network analysis that can be saved for downstream evidence synthesis.
+
+**Tags**: information retrieval, clustering, semantic network analysis, open source
+
+**Point of Contact**:
+
 ## Prerequisites
 
 Requires [Docker](https://docs.docker.com/install/) and [docker compose](https://docs.docker.com/compose/install/).
@@ -239,3 +245,13 @@ For example:
 ```bash
     ./scripts/specter_populate_database.sh example_embeddings.csv
 ```
+
+## Disclaimer
+The United States Environmental Protection Agency (EPA) GitHub project
+code is provided on an "as is" basis and the user assumes responsibility for its use. EPA
+has relinquished control of the information and no longer has responsibility to protect
+the integrity, confidentiality, or availability of the information. Any reference to specific
+commercial products, processes, or services by service mark, trademark, manufacturer, or
+otherwise, does not constitute or imply their endorsement, recommendation or favoring
+by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of
+any commercial product or activity by EPA or the United States Government.
