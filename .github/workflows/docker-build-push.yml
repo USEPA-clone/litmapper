@@ -84,7 +84,7 @@ jobs:
           
   etl-build-push:
 
-    runs-on: ubuntu-latest
+    runs-on: th874
     environment: ${{ github.head_ref || github.ref_name }}
     permissions:
       contents: write
