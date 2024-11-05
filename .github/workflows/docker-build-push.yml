@@ -157,7 +157,7 @@ jobs:
 
       # Create .env file for build  
       - name: Creating .env file
-        run: echo "$ENV_TEXT" > ./front_end/.env
+        run: echo "$ENV_TEXT" > ./frontend/.env
         env:
           ENV_TEXT: ${{vars.ENV_TEXT}} 
         
