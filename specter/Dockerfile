@@ -4,4 +4,7 @@ WORKDIR /code
 COPY . /code
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install -r /code/requirements.txt
-CMD ["python", "populate.py"]
+RUN chmod +x populate.py
+CMD ["../usr/bin/python3", "./populate.py"]
+
+
