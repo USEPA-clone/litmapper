@@ -6,6 +6,7 @@ COPY ./requirements.txt /code/requirements.txt
 RUN ls -la
 RUN pip install -r /code/requirements.txt
 RUN chmod +x populate.py
-CMD ["/usr/bin/python3", "/code/populate.py"]
+ENTRYPOINT ["/usr/bin/python3", "/code/populate.py"]
+#CMD ["/usr/bin/python3", "/code/populate.py"]
 
 
