@@ -16,3 +16,6 @@ RUN pip install --no-cache numpy==1.26.4 \
 RUN python -c 'import tensorflow_hub as hub; hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")'
 
 WORKDIR /code
+
+# Run the command to start your app
+CMD ["python", "run.py"]
