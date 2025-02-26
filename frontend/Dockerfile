@@ -1,6 +1,7 @@
 FROM node:20.13.1-slim
 
 WORKDIR /code
+COPY . /code
 COPY ./package.json ./package-lock.json ./
 
 RUN npm install
